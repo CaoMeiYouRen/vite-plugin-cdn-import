@@ -29,7 +29,7 @@ function getModuleVersion(name: string): string {
 function isFullPath(path: string) {
     return path.startsWith('http:')
         || path.startsWith('https:')
-        || path.startsWith('//') ? true : false
+        || path.startsWith('//')
 }
 
 function renderUrl(url: string, data: {
@@ -86,12 +86,14 @@ function PluginImportToCDN(options: Options): Plugin[] {
             })
         })
 
-        let css = v.css || []
-        if (!Array.isArray(css) && css) {
-            css = [css]
+        let css: string[] = []
+        if (Array.isArray(v.css)) {
+            css = v.css
+        } else if (v.css) {
+            css = [v.css]
         }
 
-        const cssList = !Array.isArray(css) ? [] : css.map(c => renderUrl(prodUrl, {
+        const cssList = css.map(c => renderUrl(prodUrl, {
             ...data,
             path: c
         }))
@@ -124,8 +126,15 @@ function PluginImportToCDN(options: Options): Plugin[] {
                 const jsCode = isDev
                     ? ''
                     : data
-                        .map(p => p.pathList.map(url => `<script src="${url}"></script>`).join('\n'))
-                        .join('\n')
+                        .map(p =>
+                            p.pathList
+                                .map(url => {
+                                    if (p.esmodule) {
+                                        return `<script type="module" src="${url}"></script>`
+                                    }
+                                    return `<script src="${url}"></script>`
+                                }).join('\n')
+                        ).join('\n')
 
                 return html.replace(
                     /<\/title>/i,

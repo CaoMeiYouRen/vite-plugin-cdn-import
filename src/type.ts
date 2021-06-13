@@ -4,6 +4,7 @@ export interface Module {
     var: string
     path: string | string[]
     css?: string | string[]
+    esmodule?: boolean
 }
 
 export interface Options {
