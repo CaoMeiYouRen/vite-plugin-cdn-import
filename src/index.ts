@@ -1,7 +1,7 @@
 import externalGlobals from 'rollup-plugin-external-globals'
 import fs from 'fs'
 import path from 'path'
-import { Plugin } from 'vite'
+import { Plugin, UserConfig } from 'vite'
 import { Module, Options } from './type'
 import autoComplete from './autoComplete'
 
@@ -54,7 +54,7 @@ function PluginImportToCDN(options: Options): Plugin[] {
         prodUrl = 'https://cdn.jsdelivr.net/npm/{name}@{version}/{path}',
     } = options
 
-    const isDev = process.env.NODE_ENV !== 'production'
+    let isBuild = false
 
     const data = modules.map((m) => {
         let v: Module
@@ -114,16 +114,40 @@ function PluginImportToCDN(options: Options): Plugin[] {
         externalMap[v.name] = v.var
     })
 
+    const externalLibs = Object.keys(externalMap)
+
     const plugins: Plugin[] = [
         {
             name: 'vite-plugin-cdn-import',
+            config(_, { command }) {
+                const userConfig: UserConfig = {
+                    build: {
+                        rollupOptions: {}
+                    }
+                }
+
+                if (command === 'build') {
+                    isBuild = true
+
+                    userConfig!.build!.rollupOptions = {
+                        external: [...externalLibs],
+                        plugins: [externalGlobals(externalMap)]
+                    }
+
+
+                } else {
+                    isBuild = false
+                }
+
+                return userConfig
+            },
             transformIndexHtml(html) {
                 const cssCode = data
                     .map(v => v.cssList.map(css => `<link href="${css}" rel="stylesheet">`).join('\n'))
                     .filter(v => v)
                     .join('\n')
 
-                const jsCode = isDev
+                const jsCode = !isBuild
                     ? ''
                     : data
                         .map(p =>
@@ -143,10 +167,6 @@ function PluginImportToCDN(options: Options): Plugin[] {
             },
         },
     ]
-
-    if (!isDev) {
-        plugins.push(externalGlobals(externalMap))
-    }
 
     return plugins
 }
