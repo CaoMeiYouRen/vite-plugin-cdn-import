@@ -1,8 +1,7 @@
-
 export interface Module {
     name: string
-    var: string
-    path: string | string[]
+    var?: string
+    path?: string | string[]
     css?: string | string[]
     esmodule?: boolean
 }

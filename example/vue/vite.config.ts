@@ -4,13 +4,16 @@ import importToCDN, { autoComplete } from '../../dist/index'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    server: {
+        open: true
+    },
     plugins: [
         vue(),
         importToCDN({
+            prodUrl: 'https://unpkg.com/{name}@{version}/{path}',
             modules: [
-                autoComplete('vue'),
-                autoComplete('@vueuse/shared'),
-                autoComplete('@vueuse/core')
+                // autoComplete('vue'),
+                // autoComplete('@vueuse/core')
             ],
         }),
     ],

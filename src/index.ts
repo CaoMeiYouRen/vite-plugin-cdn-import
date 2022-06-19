@@ -65,10 +65,10 @@ function PluginImportToCDN(options: Options): Plugin[] {
         }
         const version = getModuleVersion(v.name)
         let pathList: string[] = []
-        if (!Array.isArray(v.path)) {
-            pathList.push(v.path)
-        } else {
+        if (Array.isArray(v.path)) {
             pathList = v.path
+        } else if (v.path) {
+            pathList.push(v.path)
         }
 
         const data = {
@@ -111,7 +111,9 @@ function PluginImportToCDN(options: Options): Plugin[] {
     } = {}
 
     data.forEach((v) => {
-        externalMap[v.name] = v.var
+        if (v.var) {
+            externalMap[v.name] = v.var
+        }
     })
 
     const externalLibs = Object.keys(externalMap)
