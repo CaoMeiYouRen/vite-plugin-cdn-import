@@ -12,9 +12,12 @@ export default defineConfig({
         importToCDN({
             prodUrl: 'https://unpkg.com/{name}@{version}/{path}',
             modules: [
-                // autoComplete('vue'),
+                autoComplete('vue'),
                 // autoComplete('@vueuse/core')
             ],
         }),
     ],
+    build: {
+        minify: false
+    }
 })

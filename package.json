@@ -34,7 +34,7 @@
         "@types/node": "^15.3.0",
         "tsup": "^4.10.1",
         "typescript": "^4.2.4",
-        "vite": "^2.3.7"
+        "vite": "^2.6.0"
     },
     "dependencies": {
         "rollup-plugin-external-globals": "^0.6.1"

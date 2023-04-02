@@ -122,6 +122,7 @@ function PluginImportToCDN(options: Options): Plugin[] {
         {
             name: 'vite-plugin-cdn-import',
             config(_, { command }) {
+                // console.log('command', JSON.stringify(command))
                 const userConfig: UserConfig = {
                     build: {
                         rollupOptions: {}
@@ -169,7 +170,9 @@ function PluginImportToCDN(options: Options): Plugin[] {
             },
         },
     ]
-
+    // if (isBuild) {
+    //     plugins.push(externalGlobals(externalMap))
+    // }
     return plugins
 }
 
